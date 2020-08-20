@@ -44,6 +44,11 @@ public class MovieService {
 	}
 
 
+	/**
+	 * Map Json returned from Omdb into Movie entity
+	 * @param omdbJsonObject
+	 * @return
+	 */
 	private Movie mapOmdbJsonIntoMovieEntity(JsonObject omdbJsonObject) {
 		// To do - store document name capitalized on each work
 		String movieName = omdbJsonObject.get("Title").getAsString().toLowerCase();
@@ -65,4 +70,18 @@ public class MovieService {
 		}
 		return movie;
 	}
+
+
+	/**
+	 * Get all movies in the local database
+	 * @return
+	 * @throws IOException 
+	 */
+	public List<Movie> getAllMovies() throws IOException {
+		return movieRepository.getAllMovies();
+	}
+	
+	
+	
+	
 }

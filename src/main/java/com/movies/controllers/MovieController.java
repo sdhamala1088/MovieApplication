@@ -2,6 +2,8 @@ package com.movies.controllers;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +18,30 @@ import com.movies.services.MovieService;
 
 @RestController
 public class MovieController {
-	
+
 	@Autowired
 	private MovieService movieService;
-	
+
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
-		// get a movie data by it's name
-		@GetMapping("/movies/{name}")
-		public ResponseEntity<Movie> getMovie(@PathVariable String name, HttpServletResponse response) throws IOException, URISyntaxException {
-			Movie movie = movieService.getMovieByName(name);
-			if (movie == null) {
-				return ResponseEntity.notFound().build();
-			} else {
-				return ResponseEntity.ok(movie);
-			}
+	// get a movie data by it's name
+	@GetMapping("/movies/{name}")
+	public ResponseEntity<Movie> getMovie(@PathVariable String name, HttpServletResponse response)
+			throws IOException, URISyntaxException {
+		Movie movie = movieService.getMovieByName(name);
+		if (movie == null) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok(movie);
 		}
+	}
+
+	// get all movies in local database
+	@GetMapping("/movies")
+	public ResponseEntity<List<Movie>> getAllMovies() throws IOException {
+		List<Movie> allMovies = movieService.getAllMovies();
+		return ResponseEntity.ok(allMovies);
+	}
+	
+	
 }

@@ -2,6 +2,10 @@ package com.movies.repositories;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
@@ -15,15 +19,16 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -166,5 +171,29 @@ public class MovieRepository {
 			// System.exit
 		}
 		closeConnection();
+	}
+
+	/**
+	 * Get all movies in local database
+	 * To do - add scroll & size if db too large >10000 items
+	 * @return 
+	 * @throws IOException 
+	 */
+	public List<Movie> getAllMovies() throws IOException {
+		makeConnection(host, portOne, portTwo, scheme);
+		SearchRequest searchRequest = new SearchRequest("movie");
+		SearchResponse searchResponse = null;
+		List<Movie> movies = new ArrayList<>();
+		try {
+			searchResponse = RestHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (java.io.IOException e) {
+			e.getLocalizedMessage();
+		}
+		SearchHit[] hits = searchResponse.getHits().getHits();
+		Arrays.stream(hits).forEach(hit -> {
+			movies.add(ObjectMapper.convertValue(hit.getSourceAsMap(), Movie.class));
+		});
+		closeConnection();
+		return movies;
 	}
 }
