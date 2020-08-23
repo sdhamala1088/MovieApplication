@@ -17,7 +17,7 @@ public class Movie {
 	List<String> genreList = new ArrayList<String>();
 	String quote;
 	int rank;
-	Path imgPath; // To do - look up img type store in DB  
+	String imgPath; 
 	Path themeSong; // To do - look up mp3 type store in DB
 	
 	public Movie() {
@@ -25,12 +25,13 @@ public class Movie {
 	
 	@Autowired
 	public Movie(String name, Director director, String releaseDate, 
-			List<Artist> artists, List<String> genreList) {
+			List<Artist> artists, List<String> genreList, String imgPath) {
 		this.name = name;
 		this.director = director;
 		this.releaseDate = releaseDate;
 		this.artists = artists;
 		this.genreList = genreList;
+		this.imgPath = imgPath;
 	}
 
 	public String getQuote() {
@@ -85,11 +86,11 @@ public class Movie {
 		this.rank = rank;
 	}
 
-	public Path getImgPath() {
+	public String getImgPath() {
 		return imgPath;
 	}
 
-	public void setImgPath(Path imgPath) {
+	public void setImgPath(String imgPath) {
 		this.imgPath = imgPath;
 	}
 
