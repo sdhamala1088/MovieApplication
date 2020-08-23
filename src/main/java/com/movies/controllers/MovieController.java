@@ -7,9 +7,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,10 +27,10 @@ public class MovieController {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
 	// get a movie data by it's name
-	@GetMapping("/movies/{name}")
-	public ResponseEntity<Movie> getMovie(@PathVariable String name, HttpServletResponse response)
+	@GetMapping("/movies/{movieName}")
+	public ResponseEntity<Movie> getMovie(@PathVariable String movieName, HttpServletResponse response)
 			throws IOException, URISyntaxException {
-		Movie movie = movieService.getMovieByName(name);
+		Movie movie = movieService.getMovieByName(movieName);
 		if (movie == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -43,5 +45,15 @@ public class MovieController {
 		return ResponseEntity.ok(allMovies);
 	}
 	
-	
+	// post quote for a given movie
+	@PostMapping(path = "/movies/{movieName}/{quote}", consumes = MediaType.ALL_VALUE)
+	public ResponseEntity<Movie> addQuote(@PathVariable (name = "movieName", required = true) String movieName, 
+			@PathVariable (name = "quote", required = true) String quote) throws IOException{
+		Movie movie = movieService.addQuoteToMovie(quote, movieName);
+		if (movie == null) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok(movie);
+		}
+	}	
 }

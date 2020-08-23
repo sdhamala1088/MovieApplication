@@ -21,9 +21,12 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,7 +157,7 @@ public class MovieRepository {
 	 * To do - Make it async if database large
 	 * 
 	 * @param movie
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void insertMovie(Movie movie) throws IOException {
 
@@ -174,21 +177,18 @@ public class MovieRepository {
 	}
 
 	/**
-	 * Get all movies in local database
-	 * To do - add scroll & size if db too large >10000 items
-	 * @return 
-	 * @throws IOException 
+	 * Get all movies in local database To do - add scroll & size if db too large
+	 * >10000 items
+	 * 
+	 * @return
+	 * @throws IOException
 	 */
 	public List<Movie> getAllMovies() throws IOException {
 		makeConnection(host, portOne, portTwo, scheme);
 		SearchRequest searchRequest = new SearchRequest("movie");
 		SearchResponse searchResponse = null;
 		List<Movie> movies = new ArrayList<>();
-		try {
-			searchResponse = RestHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-		} catch (java.io.IOException e) {
-			e.getLocalizedMessage();
-		}
+		searchResponse = RestHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 		SearchHit[] hits = searchResponse.getHits().getHits();
 		Arrays.stream(hits).forEach(hit -> {
 			movies.add(ObjectMapper.convertValue(hit.getSourceAsMap(), Movie.class));
@@ -196,4 +196,18 @@ public class MovieRepository {
 		closeConnection();
 		return movies;
 	}
+
+	public Movie updateMovie(String quote, String movieName) throws IOException {
+		makeConnection(host, portOne, portTwo, scheme);
+		UpdateRequest updateRequest = new UpdateRequest(ELASTIC_MOVIE_INDEX, movieName);
+		XContentBuilder builder = XContentFactory.jsonBuilder();
+		builder.startObject();
+		builder.field("quote", quote);
+		builder.endObject();
+		updateRequest.doc(builder);
+		RestHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+		closeConnection();
+		return getMovieFromLocalDb(movieName);
+	}
+
 }

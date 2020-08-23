@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.action.update.UpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,6 @@ public class MovieService {
 		return movie;
 	}
 
-
 	/**
 	 * Map Json returned from Omdb into Movie entity
 	 * @param omdbJsonObject
@@ -71,7 +71,6 @@ public class MovieService {
 		return movie;
 	}
 
-
 	/**
 	 * Get all movies in the local database
 	 * @return
@@ -80,8 +79,8 @@ public class MovieService {
 	public List<Movie> getAllMovies() throws IOException {
 		return movieRepository.getAllMovies();
 	}
-	
-	
-	
-	
+
+	public Movie addQuoteToMovie(String quote, String movieName) throws IOException {
+		return movieRepository.updateMovie(quote, movieName);
+	}
 }
