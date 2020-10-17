@@ -1,0 +1,70 @@
+PUT /movie HTTP/1.1
+Host: localhost:9200
+Content-Type: application/json
+Cache-Control: no-cache
+Postman-Token: 5eea99f9-ebf8-0a41-f22b-9018cb5b0163
+
+{
+"settings": {
+    "analysis": {
+      "analyzer": {
+        "autocomplete": {
+          "tokenizer": "autocomplete",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "autocomplete_search": {
+          "tokenizer": "lowercase"
+        }
+      },
+      "tokenizer": {
+        "autocomplete": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      }
+    }
+  },
+	"mappings" : {
+		"properties" : {
+			"name" : {
+				"type": "text",
+				"analyzer": "autocomplete",
+				"search_analyzer": "autocomplete_search"
+			},
+			"director" : {
+				"properties" : {
+					"name": {
+						"type": "keyword"
+						}
+					}
+			},
+			"artists" : {
+				"properties" : {
+					"name": {
+						"type": "keyword"
+						}
+				}
+			},
+			"releaseDate" : {
+				"type": "string"
+			},
+			"year" : {
+				"type": "date"
+			},
+			"genres": {
+				"type": "keyword"
+			},
+			"language": {
+				"type": "keyword"
+			}
+		}
+	}
+}
+
+// Other values + other versions of these values will be generated dynamically since they will not be searched or aggregated, 

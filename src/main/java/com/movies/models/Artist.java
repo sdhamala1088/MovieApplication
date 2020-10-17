@@ -8,5 +8,4 @@ public class Artist extends Personell{
 	public Artist(String name) {
 		super(name);
 	}
-
 }
